@@ -10,6 +10,8 @@ WIDTH = 1600  # ゲームウィンドウの幅
 HEIGHT = 900  # ゲームウィンドウの高さ
 MAIN_DIR = os.path.split(os.path.abspath(__file__))[0]
 NUMBER_OF_BOMBS = 5  # 爆弾の数
+ 
+
 
 def check_bound(obj_rct: pg.Rect) -> tuple[bool, bool]:
     """
@@ -132,6 +134,7 @@ class Bomb:
 
 
 class Beam:
+
     def __init__(self, bird: Bird):
         self.img = pg.image.load(f"{MAIN_DIR}/fig/beam.png")
         self.rct = self.img.get_rect() 
@@ -149,13 +152,17 @@ class Beam:
         self.rct.move_ip(self.vx, self.vy)
         screen.blit(self.img, self.rct)
 
+
+
 def main():
     pg.display.set_caption("たたかえ！こうかとん")
     screen = pg.display.set_mode((WIDTH, HEIGHT))    
     bg_img = pg.image.load(f"{MAIN_DIR}/fig/pg_bg.jpg")
     bird = Bird(3, (900, 400))
     bombs = [Bomb() for i in range(NUMBER_OF_BOMBS)]  # Bombインスタンスがnum個
-    beam= None
+    
+    beamlist = []
+    
 
     clock = pg.time.Clock()
     tmr = 0
@@ -165,6 +172,7 @@ def main():
                 return
             if event.type == pg.KEYDOWN and event.key == pg.K_SPACE:  # スペースキーが押されたら
                 beam = Beam(bird)  # ビームインスタンス生成
+                beamlist.append(beam)
 
         
         screen.blit(bg_img, [0, 0])
@@ -176,13 +184,16 @@ def main():
                 time.sleep(1)
                 return
         
+        # 衝突
         for i,bomb in enumerate(bombs):
-            if beam is not None and beam.rct.colliderect(bomb.rct):
-                beam = None
-                bombs[i] = None
-                bird.change_img(6, screen)
+            for j, beam in enumerate(beamlist):
+                if  beam  is not None and beam.rct.colliderect(bomb.rct):
+                    beamlist[j]= None
+                    bombs[i] = None
+                    bird.change_img(6, screen)
             #  Noneでない爆弾だけのリストを作る
-            bombs = [bomb for bomb in bombs if bomb is not None]
+                bombs = [bomb for bomb in bombs if bomb is not None]
+                beamlist = [beam for beam in beamlist if beam is not None]
         
         
 
@@ -190,7 +201,7 @@ def main():
         bird.update(key_lst, screen)
         for bomb in bombs:
             bomb.update(screen)
-        if beam is not None:
+        for beam in beamlist:
             beam.update(screen)
         pg.display.update()
         tmr += 1
