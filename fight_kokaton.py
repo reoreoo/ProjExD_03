@@ -161,7 +161,7 @@ def main():
     bird = Bird(3, (900, 400))
     bombs = [Bomb() for i in range(NUMBER_OF_BOMBS)]  # Bombインスタンスがnum個
     
-    beamlist = []
+    beamlist = []  # 複数ビームの空リスト
     
 
     clock = pg.time.Clock()
