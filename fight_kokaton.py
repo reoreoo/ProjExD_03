@@ -126,8 +126,8 @@ class Beam:
         self.img = pg.image.load(f"{MAIN_DIR}/fig/beam.png")
         self.rct = self.img.get_rect() 
         self.rct.center = bird.rct.center  # こうかとんの中心座標を取得
-        #self.rct.centary = bird.rct.centery
-        #self.rct.centarx = bird.rct.centerx+bird
+        self.rct.centery = bird.rct.centery
+        self.rct.centerx = bird.rct.centerx+bird.rct.width/2
 
         self.vx, self.vy = +5, 0  # ビームの速度
 
@@ -170,12 +170,14 @@ def main():
             if beam.rct.colliderect(bomb.rct):
                 beam = None
                 bomb = None
+                bird.change_img(6, screen)
         
         
 
         key_lst = pg.key.get_pressed()
         bird.update(key_lst, screen)
-        bomb.update(screen)
+        if bomb is not None:
+            bomb.update(screen)
         if beam is not None:
             beam.update(screen)
         pg.display.update()
